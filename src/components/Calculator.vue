@@ -6,33 +6,41 @@
         <v-toolbar dense class="title"
           >Total Parenteral Nutrition (TPN) Calculator</v-toolbar
         >
-        <v-toolbar dense class="title">Created by Kevin Leung, RDN</v-toolbar>
+        <v-toolbar dense class="title mt-2"
+          >Created by Kevin Leung, RDN</v-toolbar
+        >
         <v-card class="mt-2">
           <FormulateForm
             v-model="formValues"
             class="pa-2 ma-2"
             @submit="validateForm"
           >
+            <v-row>
+              <v-col>
+                <FormulateInput
+                  type="text"
+                  v-model="patientInitials"
+                  name="patientName"
+                  label="Patient Initials"
+                  placeholder="Ex. JD"
+                  class="my-3"
+                />
+              </v-col>
+              <v-col>
+                <FormulateInput
+                  type="text"
+                  v-model="patientWeight"
+                  name="weight"
+                  label="Patient Weight (Kilograms)"
+                  validation="required|number"
+                  placeholder="Ex. 70 kg"
+                  class="my-3"
+                />
+              </v-col>
+            </v-row>
             <FormulateInput
               type="text"
-              v-model="patientInitials"
-              name="patientName"
-              label="Patient Initials"
-              placeholder="Ex. JD"
-              class="my-3"
-            />
-            <FormulateInput
-              type="text"
-              v-model="patientWeight"
-              name="patient weight"
-              label="Patient Weight (Kilograms)"
-              validation="required|number"
-              placeholder="Ex. 70 kg"
-              class="my-3"
-            />
-            <FormulateInput
-              type="text"
-              name="dextrose grams"
+              name="dextrose"
               label="Grams Dextrose (required)"
               validation="required|number"
               placeholder="Ex. 150 grams..."
@@ -40,7 +48,7 @@
             />
             <FormulateInput
               type="text"
-              name="protein grams"
+              name="protein"
               label="Grams Protein (required)"
               validation="required|number"
               placeholder="Ex. 100 grams..."
@@ -48,7 +56,7 @@
             />
             <FormulateInput
               type="text"
-              name="lipid grams"
+              name="lipid"
               label="Grams Lipids (required)"
               validation="required|number"
               placeholder="Ex. 50 grams..."
@@ -77,29 +85,40 @@ export default {
     formValues: {},
     patientInitials: "",
     patientWeight: "",
+    totalCalories: 0,
+    gfr: 0,
+    dextrosePercentage: 0,
+    proteinPercentage: 0,
+    lipidPercentage: 0
   }),
 
   methods: {
     validateForm(data) {
-      alert("data", data);
+      console.log("data", data);
+      this.calculateDextrose(data.dextrose);
+    },
+
+    calculateDextrose(dextrose) {
+      this.dextrosePercentage = parseFloat(dextrose * 3.4);
+      console.log("Dex", this.dextrosePercentage);
     },
   }
 };
 </script>
 
 <style>
-  .formulate-input-element input {
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding: 10px 2px;
-    width: 100%;
-  }
-  .formulate-input-error {
-    color: #c62828;
-  }
+.formulate-input-element input {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 10px 2px;
+  width: 100%;
+}
+.formulate-input-error {
+  color: #c62828;
+}
 
-  .formulate-input-element button {
-    width: 100%;
-    font-weight: bold;
-  }
+.formulate-input-element button {
+  width: 100%;
+  font-weight: bold;
+}
 </style>
