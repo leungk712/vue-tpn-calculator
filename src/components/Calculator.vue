@@ -3,16 +3,20 @@
     <v-row>
       <v-col cols="3" />
       <v-col cols="6">
-        <v-toolbar dense class="title"
-          >Total Parenteral Nutrition (TPN) Calculator</v-toolbar
-        >
-        <v-toolbar dense class="title mt-2"
-          >Created by Kevin Leung, RDN</v-toolbar
-        >
-        <v-card class="mt-2">
+        <v-toolbar dense class="title">
+          Total Parenteral Nutrition (TPN) Calculator
+        </v-toolbar>
+
+        <v-card class="mt-4">
+          <v-alert :value="true" type="warning">
+            TPN Calculations are based off a Dextrose 70% Stock Solution, 10%
+            Amino Acid Stock Solution, and 20% Lipid Stock Solution. As always,
+            please double check your work for any errors.
+          </v-alert>
+
           <FormulateForm
             v-model="formValues"
-            class="pa-2 ma-2"
+            class="pa-2 mx-2"
             @submit="validateForm"
           >
             <v-row>
@@ -40,7 +44,7 @@
             <FormulateInput
               type="text"
               name="dextrose"
-              label="Grams Dextrose (required)"
+              label="Grams Dextrose (required) / (70% Stock Solution)"
               validation="required|number|max:1000,value"
               placeholder="Ex. 150 grams..."
               class="my-3"
@@ -48,7 +52,7 @@
             <FormulateInput
               type="text"
               name="protein"
-              label="Grams Protein (required)"
+              label="Grams Protein (required) / (10% Stock Solution)"
               validation="required|number|max:1000,value"
               placeholder="Ex. 100 grams..."
               class="my-3"
@@ -56,7 +60,7 @@
             <FormulateInput
               type="text"
               name="lipid"
-              label="Grams Lipids (required)"
+              label="Grams Lipids (required) / (20% Stock Solution)"
               validation="required|number|max:1000,value"
               placeholder="Ex. 50 grams..."
               class="my-3"
@@ -102,10 +106,12 @@
         <v-card v-if="isCalculated">
           <v-card-title>{{ patientCardTitle }}'s TPN Summary</v-card-title>
           <v-divider />
-          <v-card-text>
+
+          <v-card-text class="title">
             {{ patientCardTitle }} will be receiving a total of
-            {{ totalCalories }} calories within a {{ formValues.hours }} hour
-            duration. TPN will provide {{ caloriesPerKilogram }} kcals/kg,
+            {{ formatNumber(totalCalories) }} calories within a
+            {{ formValues.hours }} hour duration. TPN will provide
+            {{ caloriesPerKilogram }} kcals/kg,
             {{ proteinPerKilogram }} g/protein/kg, with a glomerular filtration
             rate (GFR) of {{ gfr }} mg/kg/hr.
           </v-card-text>
@@ -156,9 +162,18 @@ export default {
       );
     },
 
+    formatNumber(totalCalories) {
+      if (totalCalories > 1000) {
+        return totalCalories
+          .toString()
+          .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+      } else {
+        return totalCalories;
+      }
+    },
+
     resetForm() {
       this.patientInitials = "";
-      this.patientWeight = "";
       this.formValues = {};
       this.totalCalories = 0;
       this.gfr = 0;
@@ -175,7 +190,7 @@ export default {
     },
 
     caloriesPerKilogram() {
-      return +(this.totalCalories / this.formValues.weight).toFixed(2);
+      return +(this.totalCalories / this.formValues.weight).toFixed(1);
     },
 
     proteinPerKilogram() {
@@ -186,6 +201,10 @@ export default {
 </script>
 
 <style>
+.formulate-input-label {
+  font-weight: bold;
+}
+
 .formulate-input-element input {
   border: 1px solid gray;
   border-radius: 5px;
@@ -194,6 +213,13 @@ export default {
 }
 .formulate-input-error {
   color: #c62828;
+}
+
+.formulate-input[data-is-showing-errors="true"]
+  .formulate-input-wrapper
+  .formulate-input-element {
+  border: 1px solid #c62828;
+  border-radius: 6px;
 }
 
 .formulate-input-element button {
