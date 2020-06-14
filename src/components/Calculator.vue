@@ -21,7 +21,7 @@
                   type="text"
                   v-model="patientInitials"
                   name="patientName"
-                  label="Patient Initials"
+                  label="Patient Initials (Optional)"
                   placeholder="Ex. JD"
                   class="my-3"
                 />
@@ -29,7 +29,6 @@
               <v-col>
                 <FormulateInput
                   type="text"
-                  v-model="patientWeight"
                   name="weight"
                   label="Patient Weight (Kilograms)"
                   validation="required|number"
@@ -42,7 +41,7 @@
               type="text"
               name="dextrose"
               label="Grams Dextrose (required)"
-              validation="required|number"
+              validation="required|number|max:1000,value"
               placeholder="Ex. 150 grams..."
               class="my-3"
             />
@@ -50,7 +49,7 @@
               type="text"
               name="protein"
               label="Grams Protein (required)"
-              validation="required|number"
+              validation="required|number|max:1000,value"
               placeholder="Ex. 100 grams..."
               class="my-3"
             />
@@ -58,18 +57,58 @@
               type="text"
               name="lipid"
               label="Grams Lipids (required)"
-              validation="required|number"
+              validation="required|number|max:1000,value"
               placeholder="Ex. 50 grams..."
               class="my-3"
             />
             <FormulateInput
-              type="submit"
-              label="Calculate"
-              id="submit-btn"
-              class="purple lighten-1 white--text py-2 my-3"
-              style="border-radius: 5px;"
+              type="text"
+              name="hours"
+              label="TPN Duration (Hours)"
+              validation="required|number|max:24,value"
+              placeholder="Ex. 24 hours..."
+              class="my-3"
             />
+            <v-row>
+              <v-col>
+                <FormulateInput
+                  type="submit"
+                  label="Calculate"
+                  id="submit-btn"
+                  class="primary darken white--text py-2 my-3"
+                  style="border-radius: 5px;"
+                />
+              </v-col>
+              <v-col>
+                <FormulateInput
+                  type="button"
+                  label="Reset"
+                  id="reset-btn"
+                  class="error darken-1 white--text py-2 my-3"
+                  style="border-radius: 5px;"
+                  @click="resetForm"
+                />
+              </v-col>
+            </v-row>
           </FormulateForm>
+        </v-card>
+      </v-col>
+      <v-col cols="3" />
+    </v-row>
+
+    <v-row>
+      <v-col cols="3" />
+      <v-col cols="6">
+        <v-card v-if="isCalculated">
+          <v-card-title>{{ patientCardTitle }}'s TPN Summary</v-card-title>
+          <v-divider />
+          <v-card-text>
+            {{ patientCardTitle }} will be receiving a total of
+            {{ totalCalories }} calories within a {{ formValues.hours }} hour
+            duration. TPN will provide {{ caloriesPerKilogram }} kcals/kg,
+            {{ proteinPerKilogram }} g/protein/kg, with a glomerular filtration
+            rate (GFR) of {{ gfr }} mg/kg/hr.
+          </v-card-text>
         </v-card>
       </v-col>
       <v-col cols="3" />
@@ -84,24 +123,64 @@ export default {
   data: () => ({
     formValues: {},
     patientInitials: "",
-    patientWeight: "",
     totalCalories: 0,
     gfr: 0,
-    dextrosePercentage: 0,
-    proteinPercentage: 0,
-    lipidPercentage: 0
+    dextroseCalories: 0,
+    proteinCalories: 0,
+    lipidCalories: 0,
+    isCalculated: false
   }),
 
   methods: {
     validateForm(data) {
-      console.log("data", data);
-      this.calculateDextrose(data.dextrose);
+      this.calculateMacronutrients(data);
+      this.gfrCalculation(data);
     },
 
-    calculateDextrose(dextrose) {
-      this.dextrosePercentage = parseFloat(dextrose * 3.4);
-      console.log("Dex", this.dextrosePercentage);
+    calculateMacronutrients(macronutrients) {
+      this.isCalculated = true;
+      this.dextroseCalories = +macronutrients.dextrose * 3.4;
+      this.proteinCalories = +macronutrients.protein * 4;
+      this.lipidCalories = +macronutrients.lipid * 10;
+
+      this.totalCalories = Math.floor(
+        this.dextroseCalories + this.proteinCalories + this.lipidCalories
+      );
     },
+
+    gfrCalculation(data) {
+      const tpnMinutes = +((data.hours * 60) / 1000);
+
+      this.gfr = parseFloat(data.dextrose / data.weight / tpnMinutes).toFixed(
+        2
+      );
+    },
+
+    resetForm() {
+      this.patientInitials = "";
+      this.patientWeight = "";
+      this.formValues = {};
+      this.totalCalories = 0;
+      this.gfr = 0;
+      this.dextroseCalories = 0;
+      this.proteinCalories = 0;
+      this.lipidCalories = 0;
+      this.isCalculated = false;
+    }
+  },
+
+  computed: {
+    patientCardTitle() {
+      return this.patientInitials ? this.patientInitials : "Patient";
+    },
+
+    caloriesPerKilogram() {
+      return +(this.totalCalories / this.formValues.weight).toFixed(2);
+    },
+
+    proteinPerKilogram() {
+      return +(this.formValues.protein / this.formValues.weight).toFixed(2);
+    }
   }
 };
 </script>

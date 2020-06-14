@@ -1,13 +1,14 @@
 <template>
   <v-app>
-    <v-app-bar app color="teal lighten-2" dark>
+    <v-app-bar app color="blue-grey darken-2" dark>
       <div class="title">
-        Kev's TPN Calculator
+        Total Parenteral Nutrition (TPN) Calculator
       </div>
 
-      <v-spacer></v-spacer>
+      <v-spacer />
 
       <v-switch
+        :prepend-icon="`brightness_5`"
         class="pt-4"
         :append-icon="`brightness_2`"
         v-model="$vuetify.theme.dark"
