@@ -130,10 +130,11 @@
 
       <v-row>
         <v-col cols="3" />
+
         <v-col cols="6">
           <v-card v-if="isCalculated">
             <v-card-title
-              >{{ patientCardTitle }}'s TPN Calculations</v-card-title
+              >{{ patientCardTitle }}'s TPN Calculations Breakdown</v-card-title
             >
             <v-divider />
 
@@ -153,8 +154,21 @@
               <v-divider />
               <div>Total: {{ totalCalories }} calories.</div>
             </v-card-text>
+
+            <v-card-text>
+              <div class="title">
+                Glomerular Filtration Rate:
+                {{ formValues.dextrose }} grams dextrose /
+                {{ formValues.weight }} kilograms /
+                {{ formValues.hours * 60 }} minutes* = {{ gfr }} mg/kg/hr.
+              </div>
+              <div class="subtitle-1">
+                *({{ formValues.hours }} hours * 60 minutes/hr)
+              </div>
+            </v-card-text>
           </v-card>
         </v-col>
+
         <v-col cols="3" />
       </v-row>
     </v-container>
