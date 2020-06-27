@@ -18,9 +18,9 @@
 
     <v-content>
       <Calculator />
-      <v-footer class="title py-4" color="blue-grey darken-2" absolute dark>
-        Created by Kevin Leung, RDN - 2020
-      </v-footer>
+      <!--      <v-footer class="title py-4" color="blue-grey darken-2" absolute dark>-->
+      <!--        Created by Kevin Leung, RDN - 2020-->
+      <!--      </v-footer>-->
     </v-content>
   </v-app>
 </template>
