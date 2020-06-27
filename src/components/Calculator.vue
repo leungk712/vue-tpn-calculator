@@ -11,8 +11,8 @@
           <v-card class="mt-4">
             <v-alert :value="true" type="warning">
               TPN Calculations are based off a Dextrose 70% Stock Solution, 10%
-              Amino Acid Stock Solution, and 20% Lipid Stock Solution. As
-              always, please double check your work for any errors.
+              Amino Acid Stock Solution, and 20% Lipid Stock Solution. Please
+              double check your work for any errors.
             </v-alert>
 
             <FormulateForm
@@ -116,6 +116,43 @@
               {{ proteinPerKilogram }} g/protein/kg, with a glomerular
               filtration rate (GFR) of {{ gfr }} mg/kg/hr.
             </v-card-text>
+
+            <apexchart
+              :series="macroOptions.series"
+              :options="macroOptions"
+              width="100%"
+              height="500"
+            />
+          </v-card>
+        </v-col>
+        <v-col cols="3" />
+      </v-row>
+
+      <v-row>
+        <v-col cols="3" />
+        <v-col cols="6">
+          <v-card v-if="isCalculated">
+            <v-card-title
+              >{{ patientCardTitle }}'s TPN Calculations</v-card-title
+            >
+            <v-divider />
+
+            <v-card-text class="title">
+              <div>
+                Dextrose: {{ formValues.dextrose }} grams x 3.4 kcals/gram =
+                {{ dextrose.calories }} calories.
+              </div>
+              <div>
+                Protein: {{ formValues.protein }} grams x 4 kcals/gram =
+                {{ protein.calories }} calories.
+              </div>
+              <div>
+                Lipid: {{ formValues.lipid }} grams x 10 kcals/gram =
+                {{ lipid.calories }} calories.
+              </div>
+              <v-divider />
+              <div>Total: {{ totalCalories }} calories.</div>
+            </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="3" />
@@ -133,9 +170,15 @@ export default {
     patientInitials: "",
     totalCalories: 0,
     gfr: 0,
-    dextroseCalories: 0,
-    proteinCalories: 0,
-    lipidCalories: 0,
+    dextrose: {
+      calories: 0
+    },
+    protein: {
+      calories: 0
+    },
+    lipid: {
+      calories: 0
+    },
     isCalculated: false
   }),
 
@@ -147,12 +190,12 @@ export default {
 
     calculateMacronutrients(macronutrients) {
       this.isCalculated = true;
-      this.dextroseCalories = +macronutrients.dextrose * 3.4;
-      this.proteinCalories = +macronutrients.protein * 4;
-      this.lipidCalories = +macronutrients.lipid * 10;
+      this.dextrose.calories = +macronutrients.dextrose * 3.4;
+      this.protein.calories = +macronutrients.protein * 4;
+      this.lipid.calories = +macronutrients.lipid * 10;
 
       this.totalCalories = Math.floor(
-        this.dextroseCalories + this.proteinCalories + this.lipidCalories
+        this.dextrose.calories + this.protein.calories + this.lipid.calories
       );
     },
 
@@ -179,9 +222,9 @@ export default {
       this.formValues = {};
       this.totalCalories = 0;
       this.gfr = 0;
-      this.dextroseCalories = 0;
-      this.proteinCalories = 0;
-      this.lipidCalories = 0;
+      this.dextrose.calories = 0;
+      this.protein.calories = 0;
+      this.lipid.calories = 0;
       this.isCalculated = false;
     }
   },
@@ -197,6 +240,24 @@ export default {
 
     proteinPerKilogram() {
       return +(this.formValues.protein / this.formValues.weight).toFixed(2);
+    },
+
+    macroOptions() {
+      return {
+        series: [
+          this.dextrose.calories,
+          this.protein.calories,
+          this.lipid.calories
+        ],
+        labels: ["Dextrose", "Protein", "Lipid"],
+        chart: {
+          type: "donut",
+          height: "500"
+        },
+        dataLabels: {
+          enabled: true
+        }
+      };
     }
   }
 };
