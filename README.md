@@ -1,5 +1,7 @@
 # vue-tpn-calculator
 
+![](vue-tpn-calculator.gif)
+
 ## Project setup
 ```
 yarn install
