@@ -4,6 +4,8 @@ As a Registered Dietitian Nutritionist (RDN), I have calculated numerous total p
 
 This project utilizes Vue.js, Vuetify, VueFormulate, and Vue-ApexChart.
 
+Check out the project at https://kevs-vue-tpn-calculator.netlify.app/
+
 ![](vue-tpn-calculator.gif)
 
 ## Project setup
