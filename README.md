@@ -1,5 +1,9 @@
 # vue-tpn-calculator
 
+As a Registered Dietitian Nutritionist (RDN), I have calculated numerous total parenteral nutritions throughout my entire career. Ensuring the safety in accurate calculation of macronutrients dextrose, protein, and lipids, this calculator aims to provide RDN's the comfort of calculating their patient's TPN over a specified period of time.
+
+This project utilizes Vue.js, Vuetify, VueFormulate, and Vue-ApexChart.
+
 ![](vue-tpn-calculator.gif)
 
 ## Project setup
